@@ -1,36 +1,513 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>Hands-Fingers Idioms Interactive Lesson</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f4f4; }
-        .container { width: 80%; margin: auto; overflow: hidden; }
-        header { background: #2c3e50; color: #fff; padding: 10px 0; text-align: center; }
-        #interactive-lesson { margin: 20px 0; padding: 20px; background: #fff; border: 1px solid #ddd; }
-        .idiom { margin: 15px 0; padding: 10px; border: 1px solid #ccc; }
-        button { padding: 10px; background: #3498db; color: white; border: none; cursor: pointer; }
-        button:hover { background: #2980b9; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hands & Fingers Idioms — Interactive Lesson</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --purple-50: #EEEDFE; --purple-100: #CECBF6; --purple-200: #AFA9EC;
+    --purple-600: #534AB7; --purple-800: #3C3489; --purple-900: #26215C;
+    --teal-50: #E1F5EE; --teal-600: #0F6E56; --teal-800: #085041;
+    --green-50: #EAF3DE; --green-600: #3B6D11; --green-200: #97C459;
+    --red-50: #FCEBEB; --red-600: #A32D2D; --red-200: #F09595;
+    --amber-50: #FAEEDA; --amber-600: #854F0B;
+    --gray-50: #F1EFE8; --gray-100: #D3D1C7; --gray-600: #5F5E5A; --gray-800: #444441;
+    --bg: #FAFAF8;
+    --card: #FFFFFF;
+    --text: #1a1a18;
+    --text-muted: #6b6b67;
+    --text-hint: #a0a09c;
+    --border: rgba(0,0,0,0.1);
+    --border-hover: rgba(0,0,0,0.2);
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--purple-900);
+    color: #fff;
+    padding: 28px 32px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '✋';
+    position: absolute;
+    right: 32px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 80px;
+    opacity: 0.12;
+  }
+  header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    font-weight: 400;
+    margin-bottom: 4px;
+  }
+  header p {
+    font-size: 13px;
+    opacity: 0.65;
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 0;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    overflow-x: auto;
+  }
+  .tab {
+    padding: 14px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active {
+    color: var(--purple-800);
+    border-bottom-color: var(--purple-600);
+  }
+
+  /* CONTENT */
+  .content { padding: 24px; max-width: 840px; margin: 0 auto; }
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* CARDS GRID */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+  }
+  .idiom-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-height: 90px;
+  }
+  .idiom-card:hover { border-color: var(--border-hover); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .idiom-card.flipped { background: var(--purple-50); border-color: var(--purple-200); }
+  .card-idiom { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+  .card-meaning { font-size: 13px; color: var(--purple-800); display: none; line-height: 1.5; }
+  .card-ru { font-size: 11px; color: var(--text-hint); margin-top: 5px; font-style: italic; }
+  .idiom-card.flipped .card-meaning { display: block; }
+  .card-hint { font-size: 11px; color: var(--text-hint); margin-top: 4px; }
+  .idiom-card.flipped .card-hint { display: none; }
+
+  /* SECTION HEADER */
+  .sec-head { margin-bottom: 20px; }
+  .sec-head h2 { font-family: 'DM Serif Display', serif; font-size: 20px; font-weight: 400; margin-bottom: 4px; }
+  .sec-head p { font-size: 13px; color: var(--text-muted); }
+
+  /* MATCH */
+  .score-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+  }
+  .score-num { font-size: 28px; font-weight: 600; color: var(--purple-800); }
+  .score-lbl { font-size: 13px; color: var(--text-muted); }
+  .btn {
+    padding: 9px 18px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    background: var(--card);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+  }
+  .btn:hover { background: var(--gray-50); }
+  .btn.primary { background: var(--purple-800); color: #fff; border-color: var(--purple-800); }
+  .btn.primary:hover { background: var(--purple-900); }
+  .match-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .match-col { display: flex; flex-direction: column; gap: 7px; }
+  .match-item {
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    font-size: 13px;
+    cursor: pointer;
+    background: var(--card);
+    transition: all 0.15s;
+    line-height: 1.4;
+    user-select: none;
+  }
+  .match-item:hover:not(.correct) { border-color: var(--border-hover); }
+  .match-item.selected { background: #E6F1FB; border-color: #378ADD; color: #0C447C; }
+  .match-item.correct { background: var(--green-50); border-color: var(--green-200); color: var(--green-600); pointer-events: none; }
+  .match-item.wrong { background: var(--red-50); border-color: var(--red-200); color: var(--red-600); animation: shake 0.3s; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+
+  /* FILL */
+  .quiz-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 12px;
+  }
+  .quiz-sentence {
+    font-size: 15px;
+    line-height: 1.8;
+    margin-bottom: 14px;
+    color: var(--text);
+  }
+  .blank { color: var(--text-hint); font-style: italic; }
+  .quiz-opts { display: flex; flex-wrap: wrap; gap: 8px; }
+  .quiz-opt {
+    padding: 7px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    font-size: 13px;
+    cursor: pointer;
+    background: var(--card);
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+  }
+  .quiz-opt:hover:not(.disabled) { border-color: var(--purple-200); background: var(--purple-50); }
+  .quiz-opt.correct { background: var(--green-50); border-color: var(--green-200); color: var(--green-600); }
+  .quiz-opt.wrong { background: var(--red-50); border-color: var(--red-200); color: var(--red-600); }
+  .quiz-opt.disabled { pointer-events: none; opacity: 0.45; }
+  .feedback {
+    font-size: 13px;
+    margin-top: 12px;
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    display: none;
+  }
+  .feedback.good { background: var(--green-50); color: var(--green-600); }
+  .feedback.bad { background: var(--red-50); color: var(--red-600); }
+
+  /* TRANSLATE */
+  .tr-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+  }
+  .tr-prompt {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 6px;
+    line-height: 1.4;
+  }
+  .tr-idiom-tag {
+    display: inline-block;
+    padding: 3px 10px;
+    background: var(--purple-50);
+    color: var(--purple-800);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 18px;
+  }
+  .tr-input {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    resize: none;
+    outline: none;
+    transition: border-color 0.15s;
+    line-height: 1.5;
+  }
+  .tr-input:focus { border-color: var(--purple-200); background: #fff; }
+  .tr-answer {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 10px;
+    padding: 10px 14px;
+    background: var(--teal-50);
+    border-radius: var(--radius-sm);
+    display: none;
+    line-height: 1.5;
+  }
+  .tr-answer strong { color: var(--teal-600); }
+  .tr-nav { display: flex; gap: 8px; align-items: center; margin-top: 16px; }
+  .tr-progress {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--text-hint);
+    background: var(--gray-50);
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+  .progress-bar-wrap { background: var(--gray-100); border-radius: 4px; height: 4px; margin-bottom: 20px; overflow: hidden; }
+  .progress-bar { height: 100%; background: var(--purple-600); border-radius: 4px; transition: width 0.3s; }
+
+  @media (max-width: 500px) {
+    .match-grid { grid-template-columns: 1fr; }
+    header h1 { font-size: 20px; }
+    .content { padding: 16px; }
+  }
+</style>
 </head>
 <body>
-    <header>
-        <h1>Hands-Fingers Idioms Interactive Lesson</h1>
-    </header>
-    <div class="container" id="interactive-lesson">
-        <div class="idiom">
-            <h2>To lend a hand</h2>
-            <p>Meaning: To help someone.</p>
-            <button onclick="alert('You clicked on To lend a hand!')">Click me</button>
-        </div>
-        <div class="idiom">
-            <h2>Fingers crossed</h2>
-            <p>Meaning: To hope for a good outcome.</p>
-            <button onclick="alert('You clicked on Fingers crossed!')">Click me</button>
-        </div>
-        <!-- Add more idioms as needed -->
+
+<header>
+  <h1>Hands &amp; Fingers Idioms</h1>
+  <p>20 идиом · 4 режима · интерактивный урок</p>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('cards')">🃏 Карточки</div>
+  <div class="tab" onclick="switchTab('match')">🔗 Совпадение</div>
+  <div class="tab" onclick="switchTab('fill')">✏️ Выбор ответа</div>
+  <div class="tab" onclick="switchTab('translate')">🌐 Перевод</div>
+</div>
+
+<div class="content">
+
+  <!-- CARDS -->
+  <div id="screen-cards" class="screen active">
+    <div class="sec-head">
+      <h2>Все идиомы</h2>
+      <p>Нажмите на карточку, чтобы увидеть значение</p>
     </div>
-    <script>
-        // JavaScript for additional functionality
-        console.log('Interactive lesson loaded!');
-    </script>
+    <div class="cards-grid" id="cards-grid"></div>
+  </div>
+
+  <!-- MATCH -->
+  <div id="screen-match" class="screen">
+    <div class="sec-head">
+      <h2>Сопоставление</h2>
+      <p>Выберите идиому и её значение</p>
+    </div>
+    <div class="score-bar">
+      <div class="score-num" id="match-score">0</div>
+      <div class="score-lbl">/ <span id="match-total">8</span> пар</div>
+      <button class="btn primary" onclick="initMatch()" style="margin-left:auto;">Заново</button>
+    </div>
+    <div class="match-grid">
+      <div class="match-col" id="match-left"></div>
+      <div class="match-col" id="match-right"></div>
+    </div>
+  </div>
+
+  <!-- FILL -->
+  <div id="screen-fill" class="screen">
+    <div class="sec-head">
+      <h2>Выберите правильный ответ</h2>
+      <p>Вставьте подходящую идиому в предложение</p>
+    </div>
+    <div id="fill-container"></div>
+    <button class="btn primary" onclick="initFill()">Новые вопросы</button>
+  </div>
+
+  <!-- TRANSLATE -->
+  <div id="screen-translate" class="screen">
+    <div class="sec-head">
+      <h2>Практика перевода</h2>
+      <p>Переведите фразу на английский, используя нужную идиому</p>
+    </div>
+    <div class="progress-bar-wrap"><div class="progress-bar" id="tr-bar" style="width:5%"></div></div>
+    <div id="translate-wrap"></div>
+  </div>
+
+</div>
+
+<script>
+const idioms = [
+  { idiom: "at your fingertips", meaning: "easily available", ru: "под рукой, в лёгком доступе" },
+  { idiom: "turn your hand to sth", meaning: "start a different type of work", ru: "взяться за другое дело" },
+  { idiom: "keep your fingers crossed", meaning: "hope for good luck", ru: "держать кулаки, желать удачи" },
+  { idiom: "get out of hand", meaning: "become uncontrollable", ru: "выйти из-под контроля" },
+  { idiom: "put a finger on", meaning: "identify exactly", ru: "точно определить" },
+  { idiom: "first-hand", meaning: "from direct experience", ru: "из первых уст" },
+  { idiom: "not lift a finger", meaning: "do nothing to help", ru: "и пальцем не пошевелить" },
+  { idiom: "change hands", meaning: "be sold to new owner", ru: "сменить владельца" },
+  { idiom: "get your fingers burnt", meaning: "suffer from a risky action", ru: "обжечься, поплатиться за риск" },
+  { idiom: "have my hands full", meaning: "be very busy", ru: "быть очень занятым" },
+  { idiom: "have green fingers", meaning: "good at gardening", ru: "иметь золотые руки в садоводстве" },
+  { idiom: "try my hand at", meaning: "attempt something new", ru: "попробовать свои силы" },
+  { idiom: "give the thumbs up/down", meaning: "approve or reject", ru: "одобрить / отклонить" },
+  { idiom: "keep your hand in", meaning: "maintain a skill", ru: "поддерживать навык" },
+  { idiom: "stick out like a sore thumb", meaning: "be very noticeable", ru: "бросаться в глаза" },
+  { idiom: "to hand", meaning: "nearby and available", ru: "под рукой, рядом" },
+  { idiom: "a rule of thumb", meaning: "general principle", ru: "практическое правило" },
+  { idiom: "give sb a hand with sth", meaning: "help someone", ru: "помочь кому-то с чем-то" },
+  { idiom: "give somebody a free hand", meaning: "give complete freedom", ru: "дать полную свободу действий" },
+  { idiom: "wash your hands of", meaning: "refuse responsibility", ru: "умыть руки" },
+];
+
+const sentences = [
+  { text: "All the information is ___ — just open the app.", answer: "at your fingertips", opts: ["at your fingertips","get out of hand","change hands","to hand"] },
+  { text: "The party started to ___ so the parents stepped in.", answer: "get out of hand", opts: ["get out of hand","not lift a finger","have green fingers","first-hand"] },
+  { text: "I couldn't ___ exactly what was bothering me.", answer: "put a finger on", opts: ["put a finger on","turn my hand to","keep my hand in","wash my hands of"] },
+  { text: "She wants to ___ ceramics this autumn.", answer: "try her hand at", opts: ["try her hand at","give a free hand","stick out like a sore thumb","get her fingers burnt"] },
+  { text: "As ___ , drink eight glasses of water a day.", answer: "a rule of thumb", opts: ["a rule of thumb","first-hand","to hand","a sore thumb"] },
+  { text: "He ___ while the rest of the team worked overtime.", answer: "didn't lift a finger", opts: ["didn't lift a finger","had green fingers","washed his hands of","gave the thumbs up"] },
+  { text: "The company ___ twice before they finally settled.", answer: "changed hands", opts: ["changed hands","kept fingers crossed","got out of hand","turned hand to"] },
+  { text: "I ___ during the job interview. It went well!", answer: "kept my fingers crossed", opts: ["kept my fingers crossed","washed my hands","turned my hand","gave the thumbs down"] },
+  { text: "He ___ with that risky investment last year.", answer: "got his fingers burnt", opts: ["got his fingers burnt","had his hands full","had green fingers","gave a free hand"] },
+  { text: "She ___ — every plant in her garden thrives.", answer: "has green fingers", opts: ["has green fingers","has her hands full","sticks out like a sore thumb","turns her hand to"] },
+];
+
+const translateData = [
+  { ru: "Вся информация у тебя под рукой.", idiom: "at your fingertips", en: "All the information is at your fingertips." },
+  { ru: "Она умеет браться за разные дела.", idiom: "turn your hand to sth", en: "She can turn her hand to anything." },
+  { ru: "Держу кулаки — надеюсь, всё получится!", idiom: "keep your fingers crossed", en: "Keep your fingers crossed — I hope it works!" },
+  { ru: "Ситуация вышла из-под контроля.", idiom: "get out of hand", en: "The situation got out of hand." },
+  { ru: "Я не могу точно определить проблему.", idiom: "put a finger on", en: "I can't put my finger on the problem." },
+  { ru: "Я узнал об этом непосредственно.", idiom: "first-hand", en: "I heard about it first-hand." },
+  { ru: "Он и пальцем не пошевелил, чтобы помочь.", idiom: "not lift a finger", en: "He didn't lift a finger to help." },
+  { ru: "Кафе сменило владельца.", idiom: "change hands", en: "The café has changed hands." },
+  { ru: "Она обожглась на этой сделке.", idiom: "get your fingers burnt", en: "She got her fingers burnt on that deal." },
+  { ru: "Я очень занят прямо сейчас.", idiom: "have my hands full", en: "I have my hands full right now." },
+  { ru: "У него золотые руки в садоводстве.", idiom: "have green fingers", en: "He has green fingers." },
+  { ru: "Я хочу попробовать свои силы в рисовании.", idiom: "try my hand at", en: "I want to try my hand at painting." },
+  { ru: "Они одобрили новый план.", idiom: "give the thumbs up/down", en: "They gave the thumbs up to the new plan." },
+  { ru: "Она продолжает практиковаться, чтобы не терять форму.", idiom: "keep your hand in", en: "She practises to keep her hand in." },
+  { ru: "В той одежде он очень выделялся.", idiom: "stick out like a sore thumb", en: "In that outfit, he stuck out like a sore thumb." },
+  { ru: "Держи ручку под рукой.", idiom: "to hand", en: "Keep a pen to hand." },
+  { ru: "Как правило, лучше сохранять работу почаще.", idiom: "a rule of thumb", en: "As a rule of thumb, save your work often." },
+  { ru: "Ты не поможешь мне с этим?", idiom: "give sb a hand with sth", en: "Could you give me a hand with this?" },
+  { ru: "Ей дали полную свободу действий.", idiom: "give somebody a free hand", en: "They gave her a free hand." },
+  { ru: "Он умыл руки и отказался от ответственности.", idiom: "wash your hands of", en: "He washed his hands of the whole affair." },
+];
+
+function shuffle(a) {
+  const b = [...a];
+  for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}
+  return b;
+}
+
+function switchTab(name) {
+  const names = ['cards','match','fill','translate'];
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active', names[i]===name));
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+}
+
+// CARDS
+function initCards() {
+  document.getElementById('cards-grid').innerHTML = idioms.map((d,i)=>`
+    <div class="idiom-card" id="card-${i}" onclick="this.classList.toggle('flipped')">
+      <div class="card-idiom">${d.idiom}</div>
+      <div class="card-meaning">${d.meaning}<div class="card-ru">${d.ru}</div></div>
+      <div class="card-hint">нажмите, чтобы увидеть</div>
+    </div>`).join('');
+}
+
+// MATCH
+let matchSelected = null, matchScore = 0;
+let _matchPairs = {};
+function initMatch() {
+  matchSelected = null; matchScore = 0;
+  document.getElementById('match-score').textContent = 0;
+  const subset = shuffle(idioms).slice(0,8);
+  document.getElementById('match-total').textContent = subset.length;
+  const rights = shuffle(subset.map(d=>d.meaning));
+  _matchPairs = Object.fromEntries(subset.map(d=>[d.idiom,d.meaning]));
+  document.getElementById('match-left').innerHTML = subset.map((d,i)=>
+    `<div class="match-item" id="ml-${i}" data-val="${d.idiom}" data-type="left" onclick="matchClick(this)">${d.idiom}</div>`).join('');
+  document.getElementById('match-right').innerHTML = rights.map((m,i)=>
+    `<div class="match-item" id="mr-${i}" data-val="${m}" data-type="right" onclick="matchClick(this)">${m}</div>`).join('');
+}
+function matchClick(el) {
+  if(el.classList.contains('correct')) return;
+  if(matchSelected && matchSelected===el) { el.classList.remove('selected'); matchSelected=null; return; }
+  if(matchSelected && matchSelected.dataset.type===el.dataset.type) {
+    matchSelected.classList.remove('selected'); matchSelected=el; el.classList.add('selected'); return;
+  }
+  if(!matchSelected) { matchSelected=el; el.classList.add('selected'); return; }
+  const a=matchSelected, b=el;
+  const idiom = a.dataset.type==='left'?a.dataset.val:b.dataset.val;
+  const meaning = a.dataset.type==='right'?a.dataset.val:b.dataset.val;
+  if(_matchPairs[idiom]===meaning) {
+    a.classList.remove('selected'); b.classList.remove('selected');
+    a.classList.add('correct'); b.classList.add('correct');
+    matchScore++; document.getElementById('match-score').textContent=matchScore;
+  } else {
+    a.classList.add('wrong'); b.classList.add('wrong');
+    setTimeout(()=>{ a.classList.remove('wrong','selected'); b.classList.remove('wrong','selected'); },600);
+  }
+  matchSelected=null;
+}
+
+// FILL
+function initFill() {
+  const qs = shuffle([...sentences]).slice(0,5);
+  document.getElementById('fill-container').innerHTML = qs.map((q,i)=>`
+    <div class="quiz-card" id="fq-${i}">
+      <div class="quiz-sentence">${q.text.replace('___','<span class="blank">___</span>')}</div>
+      <div class="quiz-opts">${shuffle(q.opts).map(o=>`
+        <button class="quiz-opt" data-q="${i}" data-ans="${q.answer}" data-val="${o}" onclick="checkFill(this)">${o}</button>`).join('')}
+      </div>
+      <div class="feedback" id="fb-${i}"></div>
+    </div>`).join('');
+}
+function checkFill(btn) {
+  const i = btn.dataset.q;
+  const correct = btn.dataset.ans===btn.dataset.val;
+  btn.classList.add(correct?'correct':'wrong');
+  document.querySelectorAll(`[data-q="${i}"]`).forEach(b=>b.classList.add('disabled'));
+  const fb = document.getElementById('fb-'+i);
+  fb.style.display='block';
+  fb.className='feedback '+(correct?'good':'bad');
+  fb.textContent = correct ? '✓ Правильно!' : `✗ Правильный ответ: ${btn.dataset.ans}`;
+}
+
+// TRANSLATE
+let trIdx = 0;
+function initTranslate() { trIdx=0; renderTranslate(); }
+function renderTranslate() {
+  const d = translateData[trIdx];
+  const pct = Math.round(((trIdx+1)/translateData.length)*100);
+  document.getElementById('tr-bar').style.width = pct+'%';
+  document.getElementById('translate-wrap').innerHTML = `
+    <div class="tr-card">
+      <div class="tr-prompt">${d.ru}</div>
+      <div class="tr-idiom-tag">${d.idiom}</div>
+      <textarea class="tr-input" id="tr-input" rows="2" placeholder="Введите перевод на английском..."></textarea>
+      <div class="tr-answer" id="tr-answer">Образец: <strong>${d.en}</strong></div>
+      <div class="tr-nav">
+        <button class="btn" onclick="showTrAnswer()">Показать ответ</button>
+        <button class="btn primary" onclick="nextTranslate()">Следующая →</button>
+        <span class="tr-progress">${trIdx+1} / ${translateData.length}</span>
+      </div>
+    </div>`;
+}
+function showTrAnswer() { document.getElementById('tr-answer').style.display='block'; }
+function nextTranslate() { trIdx=(trIdx+1)%translateData.length; renderTranslate(); }
+
+// INIT
+initCards(); initMatch(); initFill(); initTranslate();
+</script>
 </body>
 </html>
