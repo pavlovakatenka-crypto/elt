@@ -1,1 +1,36 @@
-<!DOCTYPE html>\n<html lang="en">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <link rel="stylesheet" href="css/styles.css">\n    <title>Document</title>\n</head>\n<body>\n    <header>\n        <h1>Welcome to My Website</h1>\n    </header>\n    <div id="tabs">\n        <ul>\n            <li>Tab 1</li>\n            <li>Tab 2</li>\n            <li>Tab 3</li>\n        </ul>\n    </div>\n    <div id="content">\n        <p>This is the content area.</p>\n    </div>\n    <script src="js/script.js"></script>\n</body>\n</html>
+<html>
+<head>
+    <title>Hands-Fingers Idioms Interactive Lesson</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; }
+        .container { width: 80%; margin: auto; overflow: hidden; }
+        header { background: #2c3e50; color: #fff; padding: 10px 0; text-align: center; }
+        #interactive-lesson { margin: 20px 0; padding: 20px; background: #fff; border: 1px solid #ddd; }
+        .idiom { margin: 15px 0; padding: 10px; border: 1px solid #ccc; }
+        button { padding: 10px; background: #3498db; color: white; border: none; cursor: pointer; }
+        button:hover { background: #2980b9; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Hands-Fingers Idioms Interactive Lesson</h1>
+    </header>
+    <div class="container" id="interactive-lesson">
+        <div class="idiom">
+            <h2>To lend a hand</h2>
+            <p>Meaning: To help someone.</p>
+            <button onclick="alert('You clicked on To lend a hand!')">Click me</button>
+        </div>
+        <div class="idiom">
+            <h2>Fingers crossed</h2>
+            <p>Meaning: To hope for a good outcome.</p>
+            <button onclick="alert('You clicked on Fingers crossed!')">Click me</button>
+        </div>
+        <!-- Add more idioms as needed -->
+    </div>
+    <script>
+        // JavaScript for additional functionality
+        console.log('Interactive lesson loaded!');
+    </script>
+</body>
+</html>
